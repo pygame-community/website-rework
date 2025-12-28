@@ -22,25 +22,25 @@ const posts = (await getCollection('blog')).sort((a, b) => b.data.pubDate.valueO
   </head>
   <body>
     <Header />
-    <main>
-      <section>
-        <ul>
+    <main class="flex flex-col items-center mx-auto pt-16 mt-15 md:mt-[88px] w-full px-9 md:px-13 lg:px-16 max-w-7xl">
+      <div class="w-full my-6">
+        <h2 class="text-4xl py-6 font-[DynaPuff]">Our Blog</h2>
+        <div class="flex-col gap-4 overflow-x-auto">
           {
             posts.map((post) => (
-              <li>
-                <a href={`/blog/${post.id}/`}>
-                  {post.data.heroImage && <Image width={720} height={360} src={post.data.heroImage} alt="" />}
-                  <h2>{post.data.title}</h2>
-                  <p>
+              <>
+                <a class="w-[240px]" href={`/blog/${post.id}/`}>
+                  <div class="flex justify-between py-2">
+                    <p>{post.data.title}</p>
                     <FormattedDate date={post.data.pubDate} />
-                  </p>
+                  </div>
                 </a>
-              </li>
+                <hr />
+              </>
             ))
           }
-        </ul>
-      </section>
+        </div>
+      </div>
     </main>
-    <Footer />
   </body>
 </html>

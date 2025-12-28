@@ -111,7 +111,7 @@ const selectedGameIndex = Math.floor(Math.random() * games.length);
         <h2 class="text-4xl py-6 font-[DynaPuff]">See what we're up to!</h2>
         <div class="flex-col gap-4 overflow-x-auto">
           {
-            posts.map((post) => (
+            posts.slice(0, 5).map((post) => (
               <>
                 <a class="w-[240px]" href={`/blog/${post.id}/`}>
                   <div class="flex justify-between py-2">

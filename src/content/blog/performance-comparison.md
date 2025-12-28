@@ -1,6 +1,5 @@
 ---
-title: 'Performance Comparisons Against Pygame Upstream'
-description: 'Weeee.'
+title: 'Performance Comparisons Against the Original Pygame'
 author: 'Starbuck5'
 pubDate: 'November 03 2025'
 heroImage: '../../assets/blog-placeholder-5.jpg'
@@ -32,9 +31,7 @@ We have done microbenchmarks in those PRs, but do these optimizations hold up in
 something more involved? I wrote a Vector2-based particle simulation with 30000
 particles to test it out. When visualized, it looks like this--
 
-<p align="center">
-  <img src="https://github.com/user-attachments/assets/879ffead-2a5a-4c12-9b5d-e293a098bd9a" alt="gif of vector simulation" width=40% />
-</p>
+![Vector simulation](https://github.com/user-attachments/assets/879ffead-2a5a-4c12-9b5d-e293a098bd9a)
 
 <details>
 <summary> Vector simulation script </summary>
