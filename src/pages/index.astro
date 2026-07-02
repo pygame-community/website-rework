@@ -16,10 +16,25 @@ import '../styles/global.css';
 import { getCollection } from 'astro:content';
 import FormattedDate from '@/components/FormattedDate.astro';
 import { Button } from '@/components/ui/button';
-import { IconBrandDiscord, IconBrandGithub, IconBrandX } from '@tabler/icons-react';
+import { IconBrandDiscord, IconBrandGithub, IconBrandX, IconChevronLeft, IconChevronRight } from '@tabler/icons-react';
 
 const posts = (await getCollection('blog')).sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
 const firstPost = posts[0];
+
+const praises = [
+  {
+    author: 'DaFluffyPotato',
+    authorTitle: 'Game Developer',
+    content:
+      'The changes that have been made in the current trajectory of the development are good enough reasons for me to personally switch.',
+  },
+  {
+    author: 'ClearCode',
+    authorTitle: 'YouTuber',
+    content:
+      'Pygame-CE is more modern, has more features, and is more efficient. It is also the only version that is actively worked on.',
+  },
+];
 
 const games = [
   {
@@ -38,24 +53,49 @@ const games = [
     video: 'isometria_bigwhoop.mp4',
   },
 ];
-
-const praises = [
-  {
-    author: 'DaFluffyPotato',
-    authorTitle: 'Game Developer',
-    content:
-      'The changes that have been made in the current trajectory of the development are good enough reasons for me to personally switch.',
-  },
-  {
-    author: 'ClearCode',
-    authorTitle: 'YouTuber',
-    content:
-      'Pygame-CE is more modern, has more features, and is more efficient. It is also the only version that is actively worked on.',
-  },
-];
-
 const selectedGameIndex = Math.floor(Math.random() * games.length);
 ---
+
+<style>
+  #featuredContainer video {
+    display: none;
+  }
+  /* Use */
+  #featuredContainer video.active {
+    display: block;
+  }
+</style>
+<script>
+  let container = document.getElementById('featuredContainer');
+  let videos = document.querySelectorAll('#featuredContainer video');
+  let text: HTMLSpanElement | null = document.querySelector('#featuredGameContainer span');
+  function changeFeatured(offset: number) {
+    let current = Number.parseInt(container?.dataset.current || '0');
+
+    current += offset;
+    if (current < 0) {
+      current += videos.length;
+    }
+    current %= videos.length;
+    container?.setAttribute('data-current', current.toString());
+
+    for (const [i, v] of videos.entries()) {
+      v.classList.remove('active');
+      if (i == current) {
+        v.classList.add('active');
+      }
+    }
+
+    if (text) {
+      const title = videos[current].dataset.title;
+      const developer = videos[current].dataset.developer;
+      text.innerText = `"${title}" by ${developer}`;
+    }
+  }
+
+  // I need to either use addEventListener or do window.changeFeatured (or just do is:inline and use js)
+  window.changeFeatured = changeFeatured;
+</script>
 
 <BaseLayout>
   <main class="flex flex-col items-center mx-auto pt-16 mt-15 md:mt-[88px] w-full px-9 md:px-13 lg:px-16 max-w-7xl">
@@ -76,12 +116,38 @@ const selectedGameIndex = Math.floor(Math.random() * games.length);
 
       <CopyCommand command="pip install pygame-ce" />
     </div>
-    <div class="mb-6 rounded-3xl overflow-hidden relative w-full">
-      <video class="w-full h-full object-cover block" autoplay loop muted>
-        <source src={games[selectedGameIndex].video} type="video/mp4" />
-      </video>
-      <div class="absolute bottom-2 right-3 text-white text-sm bg-black/50 px-2 py-1 rounded-lg">
-        "{games[selectedGameIndex].title}" by {games[selectedGameIndex].developer}
+    <div id="featuredContainer" data-current="0" class="mb-6 rounded-3xl overflow-hidden relative w-full">
+      {
+        games.map((e, i) => {
+          return (
+            <video
+              data-title={e.title}
+              data-developer={e.developer}
+              class={`w-full h-full object-cover block aspect-video min-h-full ${i == 0 ? 'active' : ''}`}
+              autoplay
+              loop
+              muted
+              playsinline
+              preload=""
+            >
+              <source src={e.video} type="video/mp4" />
+            </video>
+          );
+        })
+      }
+      <div
+        id="featuredGameContainer"
+        class="absolute bottom-2 right-3 text-white text-sm bg-neutral-900/100 px-2 py-1 rounded-lg flex gap-2 items-center"
+      >
+        <span>"{games[0].title}" by {games[0].developer}</span>
+        <div class="flex items-center">
+          <button class="cursor-pointer size-6 hover:bg-neutral-600/90 rounded-full" onclick="changeFeatured(-1)"
+            ><IconChevronLeft size={20} /></button
+          >
+          <button class="cursor-pointer size-6 hover:bg-neutral-600/90 rounded-full" onclick="changeFeatured(1)"
+            ><IconChevronRight style={{transform:"translate(4px,0)"}} size={20} /></button
+          >
+        </div>
       </div>
     </div>
     <div class="my-12">
