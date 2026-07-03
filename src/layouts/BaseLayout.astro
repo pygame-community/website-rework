@@ -1,0 +1,31 @@
+---
+import '@fontsource/geist';
+import '@fontsource/dynapuff';
+
+import BaseHead from '../components/BaseHead.astro';
+import Header from '../components/Header.astro';
+import Footer from '@/components/Footer.astro';
+import { Image } from 'astro:assets';
+
+import CopyCommand from '@/components/CopyCommand.astro';
+
+import { Highlighter } from '@/components/ui/highlighter';
+
+import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
+import '../styles/global.css';
+import FormattedDate from '@/components/FormattedDate.astro';
+import { Button } from '@/components/ui/button';
+import { IconBrandDiscord, IconBrandGithub, IconBrandX } from '@tabler/icons-react';
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
+  </head>
+  <body class="min-h-screen flex flex-col">
+    <Header />
+    <slot />
+    <Footer />
+  </body>
+</html>

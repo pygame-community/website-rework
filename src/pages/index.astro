@@ -1,4 +1,5 @@
 ---
+import BaseLayout from '@/layouts/BaseLayout.astro';
 import '@fontsource/geist';
 import '@fontsource/dynapuff';
 
@@ -15,10 +16,25 @@ import '../styles/global.css';
 import { getCollection } from 'astro:content';
 import FormattedDate from '@/components/FormattedDate.astro';
 import { Button } from '@/components/ui/button';
-import { IconBrandDiscord, IconBrandGithub, IconBrandX } from '@tabler/icons-react';
+import { IconBrandDiscord, IconBrandGithub, IconBrandX, IconChevronLeft, IconChevronRight } from '@tabler/icons-react';
 
 const posts = (await getCollection('blog')).sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
 const firstPost = posts[0];
+
+const praises = [
+  {
+    author: 'DaFluffyPotato',
+    authorTitle: 'Game Developer',
+    content:
+      'The changes that have been made in the current trajectory of the development are good enough reasons for me to personally switch.',
+  },
+  {
+    author: 'ClearCode',
+    authorTitle: 'YouTuber',
+    content:
+      'Pygame-CE is more modern, has more features, and is more efficient. It is also the only version that is actively worked on.',
+  },
+];
 
 const games = [
   {
@@ -37,116 +53,155 @@ const games = [
     video: 'isometria_bigwhoop.mp4',
   },
 ];
-
-const praises = [
-  {
-    author: 'DaFluffyPotato',
-    authorTitle: 'Game Developer',
-    content:
-      'The changes that have been made in the current trajectory of the development are good enough reasons for me to personally switch.',
-  },
-  {
-    author: 'ClearCode',
-    authorTitle: 'YouTuber',
-    content:
-      'Pygame-CE is more modern, has more features, and is more efficient. It is also the only version that is actively worked on.',
-  },
-];
-
 const selectedGameIndex = Math.floor(Math.random() * games.length);
 ---
 
-<!doctype html>
-<html lang="en">
-  <head>
-    <BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
-  </head>
-  <body>
-    <Header />
-    <main class="flex flex-col items-center mx-auto pt-16 mt-15 md:mt-[88px] w-full px-9 md:px-13 lg:px-16 max-w-7xl">
-      <div class="grid place-items-center text-center px-4 py-12 gap-6">
-        <h1 class="text-7xl font-[DynaPuff] leading-tight">
-          <span>
-            The
-            {" "}<Highlighter client:load action="highlight" color="#FF9800">First</Highlighter>{" "}
-            Choice for
-          </span>
-          <span class="block">Making Games in Python</span>
-        </h1>
+<style>
+  #featuredContainer video {
+    display: none;
+  }
+  /* Use */
+  #featuredContainer video.active {
+    display: block;
+  }
+</style>
+<script>
+  let container = document.getElementById('featuredContainer');
+  let videos = document.querySelectorAll('#featuredContainer video');
+  let text: HTMLSpanElement | null = document.querySelector('#featuredGameContainer span');
+  function changeFeatured(offset: number) {
+    let current = Number.parseInt(container?.dataset.current || '0');
 
-        <p class="text-xl text-balance">
-          Pygame: Community Edition is a drop-in replacement with modern performance and features maintained by the
-          original team from the Pygame Organization.
-        </p>
+    current += offset;
+    if (current < 0) {
+      current += videos.length;
+    }
+    current %= videos.length;
+    container?.setAttribute('data-current', current.toString());
 
-        <CopyCommand command="pip install pygame-ce" />
-      </div>
-      <div class="mb-6 rounded-3xl overflow-hidden relative w-full">
-        <video class="w-full h-full object-cover block" autoplay loop muted>
-          <source src={games[selectedGameIndex].video} type="video/mp4" />
-        </video>
-        <div class="absolute bottom-2 right-3 text-white text-sm bg-black/50 px-2 py-1 rounded-lg">
-          "{games[selectedGameIndex].title}" by {games[selectedGameIndex].developer}
+    for (const [i, v] of videos.entries()) {
+      v.classList.remove('active');
+      if (i == current) {
+        v.classList.add('active');
+      }
+    }
+
+    if (text) {
+      const title = videos[current].dataset.title;
+      const developer = videos[current].dataset.developer;
+      text.innerText = `"${title}" by ${developer}`;
+    }
+  }
+
+  // I need to either use addEventListener or do window.changeFeatured (or just do is:inline and use js)
+  window.changeFeatured = changeFeatured;
+</script>
+
+<BaseLayout>
+  <main class="flex flex-col items-center mx-auto pt-16 mt-15 md:mt-[88px] w-full px-9 md:px-13 lg:px-16 max-w-7xl">
+    <div class="grid place-items-center text-center px-4 py-12 gap-6">
+      <h1 class="text-7xl font-[DynaPuff] leading-tight">
+        <span>
+          The
+          {' '}<Highlighter client:load action="highlight" color="#FF9800">First</Highlighter>{' '}
+          Choice for
+        </span>
+        <span class="block">Making Games in Python</span>
+      </h1>
+
+      <p class="text-xl text-balance">
+        Pygame: Community Edition is a drop-in replacement with modern performance and features maintained by the
+        original team from the Pygame Organization.
+      </p>
+
+      <CopyCommand command="pip install pygame-ce" />
+    </div>
+    <div id="featuredContainer" data-current="0" class="mb-6 rounded-3xl overflow-hidden relative w-full">
+      {
+        games.map((e, i) => {
+          return (
+            <video
+              data-title={e.title}
+              data-developer={e.developer}
+              class={`w-full h-full object-cover block aspect-video min-h-full ${i == 0 ? 'active' : ''}`}
+              autoplay
+              loop
+              muted
+              playsinline
+              preload=""
+            >
+              <source src={e.video} type="video/mp4" />
+            </video>
+          );
+        })
+      }
+      <div
+        id="featuredGameContainer"
+        class="absolute bottom-2 right-3 text-white text-sm bg-neutral-900/100 px-2 py-1 rounded-lg flex gap-2 items-center"
+      >
+        <span>"{games[0].title}" by {games[0].developer}</span>
+        <div class="flex items-center">
+          <button class="cursor-pointer size-6 hover:bg-neutral-600/90 rounded-full" onclick="changeFeatured(-1)"
+            ><IconChevronLeft size={20} /></button
+          >
+          <button class="cursor-pointer size-6 hover:bg-neutral-600/90 rounded-full" onclick="changeFeatured(1)"
+            ><IconChevronRight style={{ transform: 'translate(4px,0)' }} size={20} /></button
+          >
         </div>
       </div>
-      <div class="my-6">
-        <h2 class="text-4xl text-center py-6 font-[DynaPuff]">
-          <span class="block">What makes us special?</span>
-        </h2>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-16 md:gap-10 w-full max-w-7xl mx-auto">
-          <div class="max-w-2xl text-center">
-            <p class="font-bold text-2xl pb-1">Full Control</p>
-            <p class="text-lg text-balance">
-              You have control over every pixel, sound, and interaction. No limitations.
-            </p>
-          </div>
-          <div class="max-w-2xl text-center">
-            <p class="font-bold text-2xl pb-1">Cross Platform</p>
-            <p class="text-lg text-balance">If Python can run on your device, it can run pygame-ce.</p>
-          </div>
-          <div class="max-w-2xl text-center">
-            <p class="font-bold text-2xl pb-1">Perfect for Teaching</p>
-            <p class="text-lg text-balance">
-              Used by teachers to introduce students to logic, design, and problem-solving.
-            </p>
-          </div>
+    </div>
+    <div class="my-12">
+      <h2 class="text-4xl text-center py-4 font-[DynaPuff]">
+        <span class="block">What makes us special?</span>
+      </h2>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-16 md:gap-10 w-full max-w-7xl mx-auto">
+        <div class="max-w-2xl text-center">
+          <p class="font-bold text-2xl pb-1">Full Control</p>
+          <p class="text-lg text-balance">You have control over every pixel, sound, and interaction. No limitations.</p>
         </div>
-      </div>
-      <div class="w-full my-6">
-        <h2 class="text-4xl py-6 font-[DynaPuff]">See what we're up to!</h2>
-        <div class="flex-col gap-4 overflow-x-auto">
-          {
-            posts.slice(0, 5).map((post) => (
-              <>
-                <a class="w-[240px]" href={`/blog/${post.id}/`}>
-                  <div class="flex justify-between py-2">
-                    <p>{post.data.title}</p>
-                    <FormattedDate date={post.data.pubDate} />
-                  </div>
-                </a>
-                <hr />
-              </>
-            ))
-          }
+        <div class="max-w-2xl text-center">
+          <p class="font-bold text-2xl pb-1">Cross Platform</p>
+          <p class="text-lg text-balance">If Python can run on your device, it can run pygame-ce.</p>
         </div>
-      </div>
-      <div class="w-full my-6">
-        <h2 class="text-4xl text-center py-6 font-[DynaPuff]">Connect with us!</h2>
-        <div class="flex justify-center text-center">
-          <p class="w-3xl">
-            Collaborate with maintainers and contributors around the world on GitHub, connect with the community on
-            Discord, and join the conversation on X as you help shape the future of Python game development.
+        <div class="max-w-2xl text-center">
+          <p class="font-bold text-2xl pb-1">Perfect for Teaching</p>
+          <p class="text-lg text-balance">
+            Used by teachers to introduce students to logic, design, and problem-solving.
           </p>
         </div>
-        <div class="flex justify-center text-center pt-2 text-gray-800 gap-2">
-          <IconBrandDiscord size={28} />
-          <IconBrandX size={28} />
-          <IconBrandGithub size={28} />
-        </div>
       </div>
-      <div class="w-full my-6">
-        <p class="py-2 text-center">© 2025 Pygame Community</p>
+    </div>
+    <div class="w-full my-12">
+      <h2 class="text-4xl py-6 font-[DynaPuff]">See what we're up to!</h2>
+      <div class="flex-col gap-4 overflow-x-auto">
+        {
+          posts.slice(0, 5).map((post) => (
+            <>
+              <a class="w-[240px]" href={`/blog/${post.id}/`}>
+                <div class="flex justify-between py-2">
+                  <p>{post.data.title}</p>
+                  <FormattedDate date={post.data.pubDate} />
+                </div>
+              </a>
+              <hr />
+            </>
+          ))
+        }
       </div>
-    </main>
-  </body>
-</html>
+    </div>
+    <div class="w-full my-12">
+      <h2 class="text-4xl text-center py-6 font-[DynaPuff]">Connect with us!</h2>
+      <div class="flex justify-center text-center">
+        <p class="w-3xl">
+          Collaborate with maintainers and contributors around the world on GitHub, connect with the community on
+          Discord, and join the conversation on X as you help shape the future of Python game development.
+        </p>
+      </div>
+      <div class="flex justify-center text-center pt-2 text-gray-800 gap-2">
+        <a href="https://pyga.me/discord"><IconBrandDiscord size={28} /></a>
+        <a href="https://twitter.com/pygamecommunity"><IconBrandX size={28} /></a>
+        <a href="https://github.com/pygame-community"><IconBrandGithub size={28} /></a>
+      </div>
+    </div>
+  </main>
+</BaseLayout>
