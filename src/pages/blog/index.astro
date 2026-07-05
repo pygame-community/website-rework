@@ -2,45 +2,35 @@
 import '@fontsource/geist';
 import '@fontsource/dynapuff';
 
-import { Image } from 'astro:assets';
+import BlogLayout from '@/layouts/BlogLayout.astro';
+
 import { getCollection } from 'astro:content';
-import Footer from '../../components/Footer.astro';
 import FormattedDate from '../../components/FormattedDate.astro';
-import Header from '../../components/Header.astro';
 
 import '../../styles/global.css';
-import BaseHead from '@/components/BaseHead.astro';
+
 import { SITE_TITLE, SITE_DESCRIPTION } from '@/consts';
 
 const posts = (await getCollection('blog')).sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
 ---
 
-<!doctype html>
-<html lang="en">
-  <head>
-    <BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
-  </head>
-  <body>
-    <Header />
-    <main class="flex flex-col items-center mx-auto pt-16 mt-15 md:mt-[88px] w-full px-9 md:px-13 lg:px-16 max-w-7xl">
-      <div class="w-full my-6">
-        <h2 class="text-4xl py-6 font-[DynaPuff]">Our Blog</h2>
-        <div class="flex-col gap-4 overflow-x-auto">
-          {
-            posts.map((post) => (
-              <>
-                <a class="w-[240px]" href={`/blog/${post.id}/`}>
-                  <div class="flex justify-between py-2">
-                    <p>{post.data.title}</p>
-                    <FormattedDate date={post.data.pubDate} />
-                  </div>
-                </a>
-                <hr />
-              </>
-            ))
-          }
-        </div>
-      </div>
-    </main>
-  </body>
-</html>
+<BlogLayout title={'Pygame-ce Blogs'} pubDate={null}>
+  <div class="w-full my-0 pb-12">
+    <h2 class="text-4xl py-2 font-[DynaPuff]">Our Blog</h2>
+    <div class="flex-col gap-4 overflow-x-auto">
+      {
+        posts.map((post) => (
+          <>
+            <a class="w-[240px]" href={`/blog/${post.id}/`}>
+              <div class="flex justify-between py-2">
+                <p>{post.data.title}</p>
+                <FormattedDate date={post.data.pubDate} />
+              </div>
+            </a>
+            <hr />
+          </>
+        ))
+      }
+    </div>
+  </div>
+</BlogLayout>

@@ -16,17 +16,17 @@ import '../styles/global.css';
 import FormattedDate from '@/components/FormattedDate.astro';
 import { Button } from '@/components/ui/button';
 import { IconBrandDiscord, IconBrandGithub, IconBrandX } from '@tabler/icons-react';
+
+const { title, description } = Astro.props;
 ---
 
 <!doctype html>
 <html lang="en">
   <head>
-    <BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
-  </head>
-  <body class="min-h-screen flex flex-col">
+    <BaseHead title={title ? title : SITE_TITLE} description={description ? description : SITE_DESCRIPTION} />
     <script>
       const theme = localStorage.getItem('theme');
-
+  
       // theme is saved to localstorage, but it also needs to be applied to the html
       if (theme === 'dark') {
         document.documentElement.classList.add('dark');
@@ -34,6 +34,8 @@ import { IconBrandDiscord, IconBrandGithub, IconBrandX } from '@tabler/icons-rea
         document.documentElement.classList.remove('dark');
       }
     </script>
+  </head>
+  <body class="min-h-screen flex flex-col">
     <Header />
     <slot />
     <Footer />
