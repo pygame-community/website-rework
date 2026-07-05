@@ -7,15 +7,11 @@ import Header from '../components/Header.astro';
 import Footer from '@/components/Footer.astro';
 import { Image } from 'astro:assets';
 
-import CopyCommand from '@/components/CopyCommand.astro';
-
-import { Highlighter } from '@/components/ui/highlighter';
 
 import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
 import '../styles/global.css';
 import FormattedDate from '@/components/FormattedDate.astro';
 import { Button } from '@/components/ui/button';
-import { IconBrandDiscord, IconBrandGithub, IconBrandX } from '@tabler/icons-react';
 
 const { title, description } = Astro.props;
 ---
