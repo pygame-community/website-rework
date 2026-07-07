@@ -1,6 +1,7 @@
 ---
 import HeaderLink from './HeaderLink.astro';
 import PygameCeLogo from '@/assets/pygame_ce_logo.svg';
+import { AnimatedThemeToggler } from './ui/animated-theme-toggler';
 
 import '@fontsource/geist';
 import '@fontsource/dynapuff';
@@ -15,11 +16,20 @@ import '../styles/global.css';
       >
     </p>
     <div class="flex space-x-6">
-      <HeaderLink href="/docs" class="text-gray-700">Docs</HeaderLink>
-      <HeaderLink href="/blog" class="text-gray-700">Blog</HeaderLink>
-      <HeaderLink target="_blank" href="https://www.patreon.com/pygamecommunity" class="text-gray-700"
-        >Donate</HeaderLink
+      <HeaderLink href="/docs" class="text-gray-500 hover:text-gray-900 dark:text-gray-400 hover:dark:text-gray-200"
+        >Docs</HeaderLink
       >
+      <HeaderLink href="/blog" class="text-gray-500 hover:text-gray-900 dark:text-gray-400 hover:dark:text-gray-200"
+        >Blog</HeaderLink
+      >
+      <HeaderLink
+        target="_blank"
+        href="https://www.patreon.com/pygamecommunity"
+        class="text-gray-500 hover:text-gray-900 dark:text-gray-400 hover:dark:text-gray-200">Donate</HeaderLink
+      >
+    </div>
+    <div class="flex justify-center p-6">
+      <AnimatedThemeToggler client:load />
     </div>
   </nav>
 </header>
